@@ -49,6 +49,16 @@ def allLocations():
     cur.close()
     return data
 
+@app.route('/locations/new/<location>', methods=['POST'])
+def newLocation(location):
+    cur = mysql.connection.cursor()
+    cur.execute(f"INSERT INTO Locations(location_name) VALUES('{location}')")
+    data = jsonify(cur.fetchone())
+    cur.close()
+    mysql.connection.commit()
+    print(data)
+    return data
+
 @app.route('/productmovement')
 def productMovement():
     return "product Movement page"
