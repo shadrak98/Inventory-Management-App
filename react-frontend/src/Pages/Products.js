@@ -45,7 +45,7 @@ const Products = () => {
             open={open}
             trigger={<Button>Add Product</Button>}
         >
-            <Modal.Header>Select a Photo</Modal.Header>
+            <Modal.Header>Add a Product</Modal.Header>
             <Modal.Content>
                 <Form >
                     <Form.Field>

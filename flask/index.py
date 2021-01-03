@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_mysqldb import MySQL
 import yaml
 
@@ -43,7 +43,7 @@ def newProduct(product):
 @app.route('/locations')
 def allLocations():
     cur = mysql.connection.cursor()
-    result = cur.execute("SELECT * from Locations")
+    cur.execute("SELECT * from Locations")
     data = jsonify(cur.fetchall())
     print(data)
     cur.close()
@@ -59,9 +59,28 @@ def newLocation(location):
     print(data)
     return data
 
+@app.route('/productmovements')
+def location():
+    print(request)
+    location = request.args.get('location')
+    print(location)
+    cur = mysql.connection.cursor()
+    cur.execute(f"SELECT location_id FROM Locations WHERE location_name='{location}'")
+    loc_id = cur.fetchone()
+    print(loc_id[0])
+    cur.execute(f"SELECT pm.prod_id,(SELECT product_name FROM Products WHERE pm.prod_id=product_id) AS Name, pm.quantity FROM ProductMovement AS pm WHERE pm.to_loc={loc_id[0]}")
+    data = jsonify(cur.fetchall())
+    cur.close()
+    return data
+
 @app.route('/productmovement')
 def productMovement():
-    return "product Movement page"
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT pm.movement_id,(SELECT product_name FROM Products where product_id=pm.prod_id) AS name, pm.quantity FROM ProductMovement AS pm")
+    data = jsonify(cur.fetchall())
+    print(data)
+    cur.close()
+    return data
 
 if __name__ == '__main__':
     app.run(debug=True)
