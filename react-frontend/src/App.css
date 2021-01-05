@@ -3,18 +3,31 @@
 }
 
 .table-box{
-  padding-left:40px;
-  padding-right: 40px;
-  margin-top: 30px;
+  
+  margin-top: 20px;
 }
 
 .container{
   padding-left: 40px;
   padding-right: 40px;
-  padding-bottom: 30px;
+
 }
 
 .dropdown{
   display: flex;
   align-content: flex-end;
+}
+
+.row{
+  padding-left: 10px;
+}
+
+.row-element{
+  padding: 10px;
+}
+
+.button{
+  display:flex;
+  align-content: center;
+  justify-content: end;
 }

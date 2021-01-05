@@ -42,12 +42,19 @@ def newProduct(product):
 
 @app.route('/locations')
 def allLocations():
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT * from Locations")
-    data = jsonify(cur.fetchall())
-    print(data)
-    cur.close()
-    return data
+    loc = request.args.get('location')
+    if loc == None:
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT * from Locations")
+        data = jsonify(cur.fetchall())
+        cur.close()
+        return data
+    else:
+        cur = mysql.connection.cursor()
+        cur.execute(f"SELECT * from Locations WHERE location_name<>'{loc}'")
+        data = jsonify(cur.fetchall())
+        cur.close()
+        return data
 
 @app.route('/locations/new/<location>', methods=['POST'])
 def newLocation(location):
@@ -65,22 +72,32 @@ def location():
     location = request.args.get('location')
     print(location)
     cur = mysql.connection.cursor()
-    cur.execute(f"SELECT location_id FROM Locations WHERE location_name='{location}'")
-    loc_id = cur.fetchone()
-    print(loc_id[0])
-    cur.execute(f"SELECT pm.prod_id,(SELECT product_name FROM Products WHERE pm.prod_id=product_id) AS Name, pm.quantity FROM ProductMovement AS pm WHERE pm.to_loc={loc_id[0]}")
+    cur.execute(f"SELECT pm.prod_id,(SELECT product_name FROM Products WHERE pm.prod_id=product_id) AS Name, pm.quantity FROM ProductMovement AS pm WHERE pm.to_loc=(select location_id from Locations where location_name='{location}')")
     data = jsonify(cur.fetchall())
     cur.close()
     return data
 
-@app.route('/productmovement')
+@app.route('/productmovement', methods=['GET','POST'])
 def productMovement():
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT pm.movement_id,(SELECT product_name FROM Products where product_id=pm.prod_id) AS name, pm.quantity FROM ProductMovement AS pm")
-    data = jsonify(cur.fetchall())
-    print(data)
-    cur.close()
-    return data
+    if request.method == 'GET':
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT pm.movement_id,(SELECT product_name FROM Products where product_id=pm.prod_id) AS name, pm.quantity FROM ProductMovement AS pm")
+        data = jsonify(cur.fetchall())
+        print(data)
+        cur.close()
+        return data
+    elif request.method == 'POST':
+        product = request.args.get('product')
+        from_loc = request.args.get('from')
+        to_loc = request.args.get('to')
+        quantity = request.args.get('quantity')
+        cur = mysql.connection.cursor()
+        cur.execute(f"INSERT INTO ProductMovement(datetime,from_loc,to_loc,prod_id,quantity) VALUES(now(),(select location_id from Locations where location_name='{from_loc}'),(select location_id from Locations where location_name='{to_loc}'),(select product_id from Products where product_name='{product}),{quantity})")
+        data = cur.fetchone()
+        cur.close()
+        mysql.connection.commit()
+        print(data)
+        return data
 
 if __name__ == '__main__':
     app.run(debug=True)

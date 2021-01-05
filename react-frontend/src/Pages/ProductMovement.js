@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 // import { Button, Modal, Form, ModalDescription } from 'semantic-ui-react';
 import axios from 'axios';
 import Dropdown from '../Components/Dropdown';
+import MoveForm from '../Components/MoveForm';
 import { Button, Form, FormGroup, Label, Input, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 
 // import Modalbox from '../Components/Modalbox';
@@ -15,6 +16,7 @@ const ProductMovemnent = () => {
     const [open, setOpen] = useState(false);
 
     const toggle = () => setOpen(!open);
+    const moveToggle = () => setOpen(!open);
 
     useEffect(() => {
         fetchlocations();
@@ -26,12 +28,12 @@ const ProductMovemnent = () => {
 
     useEffect(() => {
         loca();
-    },[location]);
+    },[]);
 
     const fetchlocations = async () => {
         const response = await fetch("/locations");
         const data = await response.json();
-        console.log(data);
+        // console.log(data);
         setOptions(data);
     } 
 
@@ -43,6 +45,7 @@ const ProductMovemnent = () => {
     
 
     const loca = () => {
+        console.log("loca");
         axios.get(`/productmovements?location=${location}`)
         .then(res => {
             setMovements(res.data);
@@ -67,78 +70,68 @@ const ProductMovemnent = () => {
         console.log(e);
     }
 
+    const moveFormHandler = (e) => {
+        e.preventDefault();
+        console.log(e);
+    }
+
     return (
         <React.Fragment>
         <div className='container'>
-        <h1>ProductMovemnent Page</h1>
-        <div className='dropdown'>
-        <Dropdown 
-            changeHandler={changeHandler}
-            options={options}
-        />
-        </div>
-        <Button floated='right'>Import Item</Button>
-        <Button floated='right'>Move Item</Button>
-        <Button floated='right' onClick={toggle}>Export Item</Button>
-        
-        {/* <Modalbox title={'Export Item'}
-            options={exportOptions}
-            textlabel={'Enter Quantity'}
-            dropdownlabel={'Select Product'}
-            onClickHandler={exportChangeHandler}
-        /> */}
-        {/* <Modalbox title={'Move Item'}/> */}
-        {/* <Modalbox title={'Import Item'}
-            options={}
-            textlabel={}
-            dropdownlabel={}
-            onchangeHandler={}
-        /> */}
-
-    <Modal isOpen={open} toggle={toggle}>
-        <ModalHeader toggle={toggle}>Export Item</ModalHeader>
-        <ModalBody>
-
-        <Form onSubmit={formHandler}>
-            <FormGroup>
-                <Label>Select a Product</Label>
-                <Input type="select" name="select" id="exampleSelect">
-                    {options.map(items => {
-                        <option>{items[1]}</option>
-                    })}
-                </Input>
-            </FormGroup>
-            <FormGroup>
-                <Label>Quantity</Label>
-                <Input type="number" name="quantity" id="quantity" placeholder="for example 10"/>
-            </FormGroup>
-            <Button type="submit" onClick={() => setOpen(false)}>Done</Button>
-        </Form>
-        </ModalBody> 
-        <ModalFooter>
-          <Button color="secondary" onClick={toggle}>Cancel</Button>
-        </ModalFooter>
-      </Modal>
-        </div>
-        
-        <div className="table-box">
-        <table className="ui celled table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Quantity</th>
-                </tr>
-            </thead>
-            {movements.map(movement => (
-                <MovementTable 
-                    key={movement}
-                    id={movement[0]}
-                    name={movement[1]}
-                    quantity={movement[2]}
+            <h1>ProductMovemnent Page</h1>
+            <div className='dropdown'>
+                <Dropdown 
+                    changeHandler={changeHandler}
+                    options={options}
                 />
-            ))}
-             </table>
+            </div>
+            <div className="button">
+                <div className="row-element">
+                    <Button onClick={toggle}>Import Item</Button>
+                </div>
+                <div className="row-element">
+                    <Button onClick={moveToggle}>Move Item</Button>
+                </div>
+                <div className="row-element">
+                    <Button onClick={toggle}>Export Item</Button>
+                </div>
+            </div>
+            {/* Export Item Modal */}
+            
+
+            {/* Move Item Modal */}
+            <Modal size="large" isOpen={open} toggle={moveToggle}>
+                <ModalHeader>
+                    Move Item
+                </ModalHeader>
+                <ModalBody>
+                    <MoveForm location={location} />
+                </ModalBody> 
+                <ModalFooter>
+                    <Button color="secondary" onClick={moveToggle}>Cancel</Button>
+                </ModalFooter>
+            </Modal>
+        
+        
+            <div className="table-box">
+            <table className="ui celled table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Quantity</th>
+                    </tr>
+                </thead>
+                {movements.map(movement => (
+                    <MovementTable 
+                        key={movement}
+                        id={movement[0]}
+                        name={movement[1]}
+                        quantity={movement[2]}
+                    />
+                ))}
+                </table>
+            </div>
         </div>
         </React.Fragment>
     );
