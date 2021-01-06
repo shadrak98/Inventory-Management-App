@@ -79,6 +79,7 @@ def location():
 
 @app.route('/productmovement', methods=['GET','POST'])
 def productMovement():
+    print(request.args.get('token'))
     if request.method == 'GET':
         cur = mysql.connection.cursor()
         cur.execute("SELECT pm.movement_id,(SELECT product_name FROM Products where product_id=pm.prod_id) AS name, pm.quantity FROM ProductMovement AS pm")
@@ -92,8 +93,8 @@ def productMovement():
         to_loc = request.args.get('to')
         quantity = request.args.get('quantity')
         cur = mysql.connection.cursor()
-        cur.execute(f"INSERT INTO ProductMovement(datetime,from_loc,to_loc,prod_id,quantity) VALUES(now(),(select location_id from Locations where location_name='{from_loc}'),(select location_id from Locations where location_name='{to_loc}'),(select product_id from Products where product_name='{product}),{quantity})")
-        data = cur.fetchone()
+        cur.execute(f"INSERT INTO ProductMovement(datetime,from_loc,to_loc,prod_id,quantity) VALUES(now(),(select location_id from Locations where location_name='{from_loc}'),(select location_id from Locations where location_name='{to_loc}'),(select product_id from Products where product_name='{product}'),{quantity})")
+        data = jsonify(cur.fetchone())
         cur.close()
         mysql.connection.commit()
         print(data)

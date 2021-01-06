@@ -3,7 +3,9 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Dropdown from '../Components/Dropdown';
 import MoveForm from '../Components/MoveForm';
-import { Button, Form, FormGroup, Label, Input, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
+import ExportForm from '../Components/ExportForm';
+import ImportForm from '../Components/ImportForm';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 
 // import Modalbox from '../Components/Modalbox';
 
@@ -12,11 +14,13 @@ const ProductMovemnent = () => {
     const [movements, setMovements] = useState([]);
     const [options, setOptions] = useState([]);
     const [location, setLocation] = useState('');
-    const [exportOptions, setExportOptions] = useState([]);
     const [open, setOpen] = useState(false);
+    const [openE, setOpenE] = useState(false);
+    const [openM, setOpenM] = useState(false);
 
     const toggle = () => setOpen(!open);
-    const moveToggle = () => setOpen(!open);
+    const exportToggle = () => setOpenE(!openE);
+    const moveToggle = () => setOpenM(!openM);
 
     useEffect(() => {
         fetchlocations();
@@ -45,26 +49,29 @@ const ProductMovemnent = () => {
     
 
     const loca = () => {
-        console.log("loca");
+        console.log("loca="+location);
         axios.get(`/productmovements?location=${location}`)
         .then(res => {
             setMovements(res.data);
-            setExportOptions(res.data);
+            // setExportOptions(res.data);
         })
         .catch(err => console.log(err));
     }
 
     const fetchMovements = async() => {
-        const response = await fetch('/productmovement');
-        const data = await response.json();
-        setMovements(data);
+        // const response = await fetch('/productmovement');
+        // const data = await response.json();
+        axios.get('/productmovement')
+        .then(res => {
+            console.log(res.data)
+            setMovements(res.data);
+        }).catch(err => {
+            console.log(err+" error")
+        })
+        console.log("sahdrak");
+        // console.log(JSON.stringify(data));
+        // setMovements(data);
     }
-
-    // const exportChangeHandler = (e,data) => {
-    //     // console.log(e);
-    //     e.preventDefault()
-    //     console.log(data)
-    // }
 
     const formHandler = (e) => {
         console.log(e);
@@ -93,14 +100,38 @@ const ProductMovemnent = () => {
                     <Button onClick={moveToggle}>Move Item</Button>
                 </div>
                 <div className="row-element">
-                    <Button onClick={toggle}>Export Item</Button>
+                    <Button onClick={exportToggle}>Export Item</Button>
                 </div>
             </div>
+
+            {/* Import Item Modal */}
+            <Modal size="large" isOpen={open} toggle={toggle}>
+                <ModalHeader>
+                    Import Item
+                </ModalHeader>
+                <ModalBody>
+                    <ImportForm location={location} />
+                </ModalBody> 
+                <ModalFooter>
+                    <Button color="secondary" onClick={toggle}>Cancel</Button>
+                </ModalFooter>
+            </Modal>
+
             {/* Export Item Modal */}
-            
+            <Modal size="large" isOpen={openE} toggle={exportToggle}>
+                <ModalHeader>
+                    Export Item
+                </ModalHeader>
+                <ModalBody>
+                    <ExportForm location={location} />
+                </ModalBody> 
+                <ModalFooter>
+                    <Button color="secondary" onClick={exportToggle}>Cancel</Button>
+                </ModalFooter>
+            </Modal>
 
             {/* Move Item Modal */}
-            <Modal size="large" isOpen={open} toggle={moveToggle}>
+            <Modal size="large" isOpen={openM} toggle={moveToggle}>
                 <ModalHeader>
                     Move Item
                 </ModalHeader>
@@ -122,6 +153,7 @@ const ProductMovemnent = () => {
                         <th>Quantity</th>
                     </tr>
                 </thead>
+                
                 {movements.map(movement => (
                     <MovementTable 
                         key={movement}

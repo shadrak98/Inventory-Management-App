@@ -51,7 +51,10 @@ const MoveForm = ({ location }) => {
         console.log(place + " " + product + " " + quantity);
         axios.post(`/productmovement?product=${product}&from=${location}&to=${place}&quantity=${quantity}`)
         .then(res => {
-            console.log(res.data);
+            console.log(res);
+        })
+        .catch(err => {
+            console.log(err);
         });
         setPlace("");
         setProduct("");
