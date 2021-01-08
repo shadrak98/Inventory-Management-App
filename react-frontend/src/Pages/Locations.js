@@ -50,7 +50,7 @@ const Locations = () => {
             <Modal.Content>
                 <Form >
                     <Form.Field>
-                        <label>First Name</label>
+                        <label>Location Name</label>
                         <input placeholder='Enter Location Name' onChange={searchUpdate}/>
                     </Form.Field>
                     <Button type='submit' onClick={() => newLocation()}>Submit</Button>

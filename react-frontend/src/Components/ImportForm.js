@@ -30,7 +30,7 @@ const ImportForm = ({ location }) => {
 
     const importFormHandler = (e) => {
         console.log()
-        axios.post(`/productmovement?product=${product}&from='NULL'&to=${location}&quantity=${quantity}`)
+        axios.post(`/productmovement?product=${product}&from=NULL&to=${location}&quantity=${quantity}`)
         .then(res => {
             console.log(res.data);
         })

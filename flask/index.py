@@ -82,7 +82,7 @@ def productMovement():
     print(request.args.get('token'))
     if request.method == 'GET':
         cur = mysql.connection.cursor()
-        cur.execute("SELECT pm.movement_id,(SELECT product_name FROM Products where product_id=pm.prod_id) AS name, pm.quantity FROM ProductMovement AS pm")
+        cur.execute("select pm.prod_id, greatest(0,((select sum(pmi.quantity) as sum from ProductMovement as pmi where pmi.prod_id=pm.prod_id)-(select sum(pmo.quantity) as sum from ProductMovement as pmo where pmo.from_loc=2 and pmo.prod_id=pm.prod_id))) as total from ProductMovement as pm group by pm.prod_id")
         data = jsonify(cur.fetchall())
         print(data)
         cur.close()

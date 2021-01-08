@@ -47,7 +47,7 @@ const MoveForm = ({ location }) => {
     }
 
     const moveFormHandler = (e) => {
-        e.preventDefault();
+        // e.preventDefault();
         console.log(place + " " + product + " " + quantity);
         axios.post(`/productmovement?product=${product}&from=${location}&to=${place}&quantity=${quantity}`)
         .then(res => {
