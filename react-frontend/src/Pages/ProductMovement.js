@@ -45,6 +45,7 @@ const ProductMovemnent = () => {
   const changeHandler = (e) => {
     // console.log(e.target.textContent);
     setLocation(e.target.textContent);
+    loca();
   };
 
   const loca = () => {
@@ -52,6 +53,7 @@ const ProductMovemnent = () => {
     axios
       .get(`/productmovements?location=${location}`)
       .then((res) => {
+        console.log(res.data+"hyderrabad");
         setMovements(res.data);
         // setExportOptions(res.data);
       })
@@ -76,14 +78,14 @@ const ProductMovemnent = () => {
     // setMovements(data);
   };
 
-  const formHandler = (e) => {
-    console.log(e);
-  };
+  // const formHandler = (e) => {
+  //   console.log(e);
+  // };
 
-  const moveFormHandler = (e) => {
-    e.preventDefault();
-    console.log(e);
-  };
+  // const moveFormHandler = (e) => {
+  //   e.preventDefault();
+  //   console.log(e);
+  // };
 
   return (
     <React.Fragment>

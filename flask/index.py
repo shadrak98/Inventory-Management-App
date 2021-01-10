@@ -72,8 +72,12 @@ def location():
     location = request.args.get('location')
     print(location)
     cur = mysql.connection.cursor()
-    cur.execute(f"SELECT pm.prod_id,(SELECT product_name FROM Products WHERE pm.prod_id=product_id) AS Name, pm.quantity FROM ProductMovement AS pm WHERE pm.to_loc=(select location_id from Locations where location_name='{location}')")
+    cur.execute(f"select location_id from Locations where location_name='{location}'")
+    loc = cur.fetchone()
+    print(loc[0])
+    cur.execute(f"select pm.prod_id, (select product_name from Products where product_id=pm.prod_id) as name, ifnull(greatest(0,((select sum(pmi.quantity) as sum from ProductMovement as pmi where pmi.to_loc={loc[0]} and pmi.prod_id=pm.prod_id)-(select sum(pmo.quantity) as sum from ProductMovement as pmo where pmo.from_loc={loc[0]} and pmo.prod_id=pm.prod_id))),0) as total from ProductMovement as pm group by pm.prod_id")
     data = jsonify(cur.fetchall())
+    print(data)
     cur.close()
     return data
 
@@ -82,7 +86,7 @@ def productMovement():
     print(request.args.get('token'))
     if request.method == 'GET':
         cur = mysql.connection.cursor()
-        cur.execute("select pm.prod_id, greatest(0,((select sum(pmi.quantity) as sum from ProductMovement as pmi where pmi.prod_id=pm.prod_id)-(select sum(pmo.quantity) as sum from ProductMovement as pmo where pmo.from_loc=2 and pmo.prod_id=pm.prod_id))) as total from ProductMovement as pm group by pm.prod_id")
+        cur.execute("select pm.movement_id, (select product_name from Products where product_id=pm.prod_id) as name, pm.quantity from ProductMovement as pm")
         data = jsonify(cur.fetchall())
         print(data)
         cur.close()
@@ -92,6 +96,7 @@ def productMovement():
         from_loc = request.args.get('from')
         to_loc = request.args.get('to')
         quantity = request.args.get('quantity')
+        print(from_loc + " " + to_loc)
         cur = mysql.connection.cursor()
         cur.execute(f"INSERT INTO ProductMovement(datetime,from_loc,to_loc,prod_id,quantity) VALUES(now(),(select location_id from Locations where location_name='{from_loc}'),(select location_id from Locations where location_name='{to_loc}'),(select product_id from Products where product_name='{product}'),{quantity})")
         data = jsonify(cur.fetchone())

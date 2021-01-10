@@ -65,7 +65,7 @@ const Products = () => {
             </Modal.Actions>
         </Modal>
 
-        <div className="table-box">
+        <div className="table">
         <table className="ui celled table">
             <thead>
                 <tr>

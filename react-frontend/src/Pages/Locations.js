@@ -39,7 +39,7 @@ const Locations = () => {
         
         <React.Fragment>
         <h1>Locations Page</h1>
-        
+        <div className="modalbox">
         <Modal
             onClose={() => setOpen(false)}
             onOpen={() => setOpen(true)}
@@ -65,8 +65,8 @@ const Locations = () => {
                 </Button> */}
             </Modal.Actions>
         </Modal>
-
-        <div className="table-box">
+        </div>
+        <div className="table">
         <table className="ui celled table">
             <thead>
                 <tr>
