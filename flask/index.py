@@ -71,19 +71,21 @@ def location():
     print(request)
     location = request.args.get('location')
     print(location)
-    cur = mysql.connection.cursor()
-    cur.execute(f"select location_id from Locations where location_name='{location}'")
-    loc = cur.fetchone()
-    print(loc[0])
-    cur.execute(f"select pm.prod_id, (select product_name from Products where product_id=pm.prod_id) as name, ifnull(greatest(0,((select sum(pmi.quantity) as sum from ProductMovement as pmi where pmi.to_loc={loc[0]} and pmi.prod_id=pm.prod_id)-(select sum(pmo.quantity) as sum from ProductMovement as pmo where pmo.from_loc={loc[0]} and pmo.prod_id=pm.prod_id))),0) as total from ProductMovement as pm group by pm.prod_id")
-    data = jsonify(cur.fetchall())
-    print(data)
-    cur.close()
-    return data
+    if location != "":
+        cur = mysql.connection.cursor()
+        cur.execute(f"select location_id from Locations where location_name='{location}'")
+        loc = cur.fetchone()
+        print(loc)
+        print(loc[0])
+        cur.execute(f"select I.prod_id, (select product_name from Products where product_id=I.prod_id) as name, greatest((I.sum - ifnull(O.sum,0)),0) as sum from (select prod_id,sum(quantity) as sum from ProductMovement where to_loc={loc[0]} group by prod_id) as I LEFT OUTER JOIN (select prod_id,sum(quantity) as sum from ProductMovement where from_loc={loc[0]} group by prod_id) as O on I.prod_id=O.prod_id, ProductMovement where ProductMovement.prod_id=I.prod_id group by prod_id")
+        data = jsonify(cur.fetchall())
+        print(data)
+        cur.close()
+        return data
 
 @app.route('/productmovement', methods=['GET','POST'])
 def productMovement():
-    print(request.args.get('token'))
+    # print(request.args.get('token'))
     if request.method == 'GET':
         cur = mysql.connection.cursor()
         cur.execute("select pm.movement_id, (select product_name from Products where product_id=pm.prod_id) as name, pm.quantity from ProductMovement as pm")

@@ -3,7 +3,7 @@ import { Form, FormGroup, Input, Label, Button } from 'reactstrap';
 import Dropdown from './Dropdown';
 import axios from 'axios';
 
-const ExportForm = ({ location }) => {
+const ExportForm = ({ location, onClose  }) => {
 
     const[productOptions, setProductOptions] = useState([]);
     const[quantity, setQuantity] = useState("")
@@ -28,8 +28,7 @@ const ExportForm = ({ location }) => {
         });
     }
 
-    const exportFormHandler = (e) => {
-        console.log()
+    const exportFormHandler = () => {
         axios.post(`/productmovement?product=${product}&from=${location}&to=NULL&quantity=${quantity}`)
         .then(res => {
             console.log(res.data);
@@ -37,13 +36,16 @@ const ExportForm = ({ location }) => {
         .catch(err => {
             console.log(err);
         });
+        console.log("ok")
+        onClose("export")
         setProduct("");
         setQuantity("");
+
     }
 
     return (
         <article>
-            <Form className="form" onSubmit={exportFormHandler}>
+            <Form className="form">
                 <FormGroup>
                     <Label>Product  </Label>
                     <Dropdown changeHandler={productHandler} options={productOptions}></Dropdown>
@@ -52,7 +54,7 @@ const ExportForm = ({ location }) => {
                     <Label>Quantity </Label>
                     <Input type="text" name="quantity" placeholder="quantity" value={quantity} onChange={(e) => {setQuantity(e.target.value)}}/>
                 </FormGroup>
-                <Button type="submit">Submit</Button>
+                <Button type="button" onClick={()=>exportFormHandler()}>Submit</Button>
             </Form>
         </article>
     );

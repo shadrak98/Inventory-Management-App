@@ -6,6 +6,7 @@ import MoveForm from "../Components/MoveForm";
 import ExportForm from "../Components/ExportForm";
 import ImportForm from "../Components/ImportForm";
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
+import ModalForm from "../Components/ModalForm";
 
 // import Modalbox from '../Components/Modalbox';
 
@@ -23,17 +24,26 @@ const ProductMovemnent = () => {
 
   useEffect(() => {
     fetchlocations();
-  }, []);
-
-  useEffect(() => {
     fetchMovements();
   }, []);
 
   useEffect(() => {
     if (location != "") {
+      console.log("inside useeffect -- loca");
       loca();
     }
   }, [location]);
+
+  const submitModal = (modal) => {
+    if (modal === "import") {
+      setOpen(false);
+    } else if (modal === "export") {
+      setOpenE(false);
+    } else if (modal === "move") {
+      setOpenM(false);
+    }
+    loca();
+  };
 
   const fetchlocations = async () => {
     const response = await fetch("/locations");
@@ -53,7 +63,7 @@ const ProductMovemnent = () => {
     axios
       .get(`/productmovements?location=${location}`)
       .then((res) => {
-        console.log(res.data+"hyderrabad");
+        // console.log(res.data+"hyderrabad");
         setMovements(res.data);
         // setExportOptions(res.data);
       })
@@ -66,26 +76,14 @@ const ProductMovemnent = () => {
     axios
       .get("/productmovement")
       .then((res) => {
-        console.log("sahdrak");
-        console.log(res.data);
+        // console.log("sahdrak");
+        // console.log(res.data);
         setMovements(res.data);
       })
       .catch((err) => {
         console.log(err + " error");
       });
-
-    // console.log(JSON.stringify(data));
-    // setMovements(data);
   };
-
-  // const formHandler = (e) => {
-  //   console.log(e);
-  // };
-
-  // const moveFormHandler = (e) => {
-  //   e.preventDefault();
-  //   console.log(e);
-  // };
 
   return (
     <React.Fragment>
@@ -96,21 +94,42 @@ const ProductMovemnent = () => {
         </div>
         <div className="button">
           <div className="row-element">
-            <Button onClick={toggle}>Import Item</Button>
+            <Button
+              onClick={toggle}
+              disabled={location ? false : true}
+              color="primary"
+            >
+              Import Item
+            </Button>
           </div>
           <div className="row-element">
-            <Button onClick={moveToggle}>Move Item</Button>
+            <Button
+              onClick={moveToggle}
+              disabled={location ? false : true}
+              color="primary"
+            >
+              Move Item
+            </Button>
           </div>
           <div className="row-element">
-            <Button onClick={exportToggle}>Export Item</Button>
+            <Button
+              onClick={exportToggle}
+              disabled={location ? false : true}
+              color="primary"
+            >
+              Export Item
+            </Button>
           </div>
         </div>
 
+        
+    
         {/* Import Item Modal */}
         <Modal size="large" isOpen={open} toggle={toggle}>
           <ModalHeader>Import Item</ModalHeader>
           <ModalBody>
-            <ImportForm location={location} />
+            {/* <ImportForm location={location} /> */}
+            <ModalForm location={location} formType="import" onClose={(modal) =>submitModal(modal)}/>
           </ModalBody>
           <ModalFooter>
             <Button color="secondary" onClick={toggle}>
@@ -123,7 +142,11 @@ const ProductMovemnent = () => {
         <Modal size="large" isOpen={openE} toggle={exportToggle}>
           <ModalHeader>Export Item</ModalHeader>
           <ModalBody>
-            <ExportForm location={location} />
+            {/* <ExportForm
+              location={location}
+              onClose={(modal) => submitModal(modal)}
+            /> */}
+            <ModalForm location={location} formType="export" onClose={(modal) =>submitModal(modal)}/>
           </ModalBody>
           <ModalFooter>
             <Button color="secondary" onClick={exportToggle}>
@@ -136,7 +159,8 @@ const ProductMovemnent = () => {
         <Modal size="large" isOpen={openM} toggle={moveToggle}>
           <ModalHeader>Move Item</ModalHeader>
           <ModalBody>
-            <MoveForm location={location} />
+            {/* <MoveForm location={location} /> */}
+            <ModalForm location={location} formType="move" onClose={(modal) =>submitModal(modal)}/>
           </ModalBody>
           <ModalFooter>
             <Button color="secondary" onClick={moveToggle}>

@@ -28,11 +28,11 @@ const ImportForm = ({ location }) => {
         });
     }
 
-    const importFormHandler = (e) => {
-        console.log()
+    const importFormHandler = () => {
+        console.log("inside importForm handler")
         axios.post(`/productmovement?product=${product}&from=NULL&to=${location}&quantity=${quantity}`)
         .then(res => {
-            console.log(res.data);
+            console.log(res.data+"import response");
         })
         .catch(err => {
             console.log(err);
@@ -43,7 +43,7 @@ const ImportForm = ({ location }) => {
 
     return (
         <article>
-            <Form className="form" onSubmit={importFormHandler}>
+            <Form className="form">
                 <FormGroup>
                     <Label>Product  </Label>
                     <Dropdown changeHandler={productHandler} options={productOptions}></Dropdown>
@@ -52,7 +52,7 @@ const ImportForm = ({ location }) => {
                     <Label>Quantity </Label>
                     <Input type="text" name="quantity" placeholder="quantity" value={quantity} onChange={(e) => {setQuantity(e.target.value)}}/>
                 </FormGroup>
-                <Button type="submit">Submit</Button>
+                <Button type="button" onClick={()=>importFormHandler()}>Submit</Button>
             </Form>
         </article>
     );

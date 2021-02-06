@@ -46,7 +46,7 @@ const MoveForm = ({ location }) => {
         });
     }
 
-    const moveFormHandler = (e) => {
+    const moveFormHandler = () => {
         // e.preventDefault();
         console.log(place + " " + product + " " + quantity);
         axios.post(`/productmovement?product=${product}&from=${location}&to=${place}&quantity=${quantity}`)
@@ -63,7 +63,7 @@ const MoveForm = ({ location }) => {
 
     return(
         <article>
-        <Form className="form" onSubmit={moveFormHandler}>
+        <Form className="form">
             <div className="row">
                 <Row>
                     <div className="row-element">
@@ -84,7 +84,7 @@ const MoveForm = ({ location }) => {
                 <Label>Quantity</Label>
                 <Input type="text" id="quantity" name="quantity" placeholder="quantity" value={quantity} onChange={(e) => {setQuantity(e.target.value)}} />
             </FormGroup>
-            <Button type="submit" >Submit</Button> 
+            <Button type="button" onclick={()=>moveFormHandler()}>Submit</Button> 
         </Form>
         </article>
     );
