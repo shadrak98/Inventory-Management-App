@@ -40,6 +40,24 @@ def newProduct(product):
     print(data)
     return data
 
+@app.route('/products/<id>/delete', methods=['DELETE'])
+def deleteProduct(id):
+    cur = mysql.connection.cursor()
+    cur.execute(f"DELETE FROM Products WHERE product_id={id}")
+    data = jsonify(cur.fetchone())
+    cur.close()
+    mysql.connection.commit()
+    return data
+
+@app.route('/product/update/<id>/<value>', methods=['POST'])
+def updateProduct(id,value):
+    cur = mysql.connection.cursor()
+    cur.execute(f"UPDATE Products SET product_name='{value}' WHERE product_id={id}")
+    data = jsonify(cur.fetchone())
+    cur.close()
+    mysql.connection.commit()
+    return data
+
 @app.route('/locations')
 def allLocations():
     loc = request.args.get('location')
@@ -64,6 +82,24 @@ def newLocation(location):
     cur.close()
     mysql.connection.commit()
     print(data)
+    return data
+
+@app.route('/location/<id>/delete', methods=['DELETE'])
+def deleteLocation(id):
+    cur = mysql.connection.cursor()
+    cur.execute(f"DELETE FROM Locations WHERE location_id={id}")
+    data = jsonify(cur.fetchone())
+    cur.close()
+    mysql.connection.commit()
+    return data
+
+@app.route('/location/update/<id>/<value>', methods=['POST'])
+def updateLocation(id,value):
+    cur = mysql.connection.cursor()
+    cur.execute(f"UPDATE Locations SET location_name='{value}' WHERE location_id={id}")
+    data = jsonify(cur.fetchone())
+    cur.close()
+    mysql.connection.commit()
     return data
 
 @app.route('/productmovements')

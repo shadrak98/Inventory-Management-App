@@ -65,8 +65,7 @@ const ModalForm = ({ location, formType, onClose }) => {
     } else if(formType === "export") {
       axios.post(`/productmovement?product=${product}&from=${location}&to=NULL&quantity=${quantity}`)
         .then(res => {
-            console.log(res.data);
-            
+            console.log(res.data);    
         })
         .catch(err => {
             console.log(err);

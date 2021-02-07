@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Modal, Form } from 'semantic-ui-react';
+import { Modal as ModalB, ModalFooter, ModalBody, ModalHeader } from "reactstrap";
 import axios from 'axios';
+import EditForm from "../Components/EditForm";
 
 const Products = () => {
 
@@ -38,7 +40,7 @@ const Products = () => {
     return (
         <React.Fragment>
         <h1>Products Page</h1>
-        
+        <div className="modalbox">
         <Modal
             onClose={() => setOpen(false)}
             onOpen={() => setOpen(true)}
@@ -64,18 +66,20 @@ const Products = () => {
                 </Button> */}
             </Modal.Actions>
         </Modal>
+        </div>
 
         <div className="table">
         <table className="ui celled table">
             <thead>
-                <tr>
+                <tr className="center aligned">
                     <th>ID</th>
                     <th>Name</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             {products.map(product => (
                 <ProductTable 
-                    key={product}
+                    key={product[0]}
                     id={product[0]}
                     name={product[1]}
                 />
@@ -87,15 +91,50 @@ const Products = () => {
 }
 
 const ProductTable = ({ id, name }) => {
-    return (
+
+    const [open, setOpen] = useState(false);
+
+    const toggle = () => setOpen(!open);
+
+    // const editHandler = (id) => {
+    //     console.log(id)
+    // }
+
+    const deleteHandler = (id) => {
+        console.log("delete_id "+id);
+        axios.delete(`/products/${id}/delete`)
+        .then(res => {
+            console.log("product deleted-" + res)
+        })
+        .catch(err => {
+            console.log(err)
+        });
         
+    }
+
+    return (
+        <React.Fragment>
+            <ModalB size="large" isOpen={open} toggle={toggle}>
+        <ModalHeader>
+            Product
+        </ModalHeader>
+        <ModalBody>
+            <EditForm title="Product" oldname={name} id={id}></EditForm>
+        </ModalBody>        
+        <ModalFooter>
+            <Button color="black" onClick={toggle}>Cancel</Button>
+        </ModalFooter>
+    </ModalB>  
             <tbody>
-                <tr>
+                <tr className="center aligned">
                     <td>{id}</td>
                     <td>{name}</td>
+                    <td className="right alligned collapsing">
+                        <Button className="ui labeled icon button" onClick={toggle}><i className="edit icon"></i> Edit </Button>
+                        <Button className="ui labeled icon button" onClick={() => deleteHandler(id)}><i className="trash icon"></i> Delete </Button></td>
                 </tr>
             </tbody>
-
+        </React.Fragment>
     );
 }
 

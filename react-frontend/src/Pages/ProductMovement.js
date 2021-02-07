@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 // import { Button, Modal, Form, ModalDescription } from 'semantic-ui-react';
 import axios from "axios";
 import Dropdown from "../Components/Dropdown";
-import MoveForm from "../Components/MoveForm";
-import ExportForm from "../Components/ExportForm";
-import ImportForm from "../Components/ImportForm";
+// import MoveForm from "../Components/MoveForm";
+// import ExportForm from "../Components/ExportForm";
+// import ImportForm from "../Components/ImportForm";
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 import ModalForm from "../Components/ModalForm";
 
@@ -178,7 +178,7 @@ const ProductMovemnent = () => {
                 <th>Quantity</th>
               </tr>
             </thead>
-            {console.log(movements + "movements")}
+            {/* {console.log(movements + "movements")} */}
             {movements.map((movement) => (
               <MovementTable
                 key={movement}
