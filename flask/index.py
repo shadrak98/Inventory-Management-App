@@ -102,7 +102,7 @@ def updateLocation(id,value):
     mysql.connection.commit()
     return data
 
-@app.route('/productmovements')
+@app.route('/productmovements_locationwise')
 def location():
     print(request)
     location = request.args.get('location')

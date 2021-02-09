@@ -2,9 +2,9 @@ import React, {useState} from 'react';
 import { Form, FormGroup, Label, Input, Button } from 'reactstrap';
 import axios from 'axios';
 
-const EditForm = ({ title, oldname, id}) => {
+const EditForm = ({ title, oldname, id, onClose }) => {
 
-    const [value, setValue] = useState("");
+    const [value, setValue] = useState(oldname);
 
     const FormHandler = () => {
         console.log(id + oldname + title + value);
@@ -12,6 +12,7 @@ const EditForm = ({ title, oldname, id}) => {
             axios.post(`/location/update/${id}/${value}`)
             .then(res => {
                 console.log(res);
+                onClose();
             })
             .catch(err => {
                 console.log(err);
@@ -20,11 +21,13 @@ const EditForm = ({ title, oldname, id}) => {
             axios.post(`/product/update/${id}/${value}`)
             .then(res => {
                 console.log(res);
+                onClose();
             })
             .catch(err => {
                 console.log(err);
             })
         }
+        
     }
 
     return (
@@ -32,7 +35,7 @@ const EditForm = ({ title, oldname, id}) => {
             <Form>
                 <FormGroup>
                     <Label>New {title} Name</Label>
-                    <Input type="text" name="name" placeholder={oldname} value={value} onChange={(e) => {setValue(e.target.value)}}></Input>
+                    <Input type="text" name="name" value={value} onChange={(e) => {setValue(e.target.value)}}></Input>
                 </FormGroup>
                 <Button type="button" onClick={() => FormHandler()}>Submit</Button>
             </Form>

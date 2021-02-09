@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Button, Modal, Form } from "semantic-ui-react";
-import { Modal as ModalB, ModalFooter, ModalBody, ModalHeader } from "reactstrap";
+import { Modal as ModalB, ModalFooter, ModalBody, ModalHeader, Form, FormGroup, Button } from "reactstrap";
 import axios from "axios";
-import EditForm from "../Components/EditForm";
+import LocationTable from "../Components/LocationTable";
 
 const Locations = () => {
   const [locations, setLocations] = useState([]);
@@ -12,7 +11,13 @@ const Locations = () => {
 
   useEffect(() => {
     fetchlocations();
-  }, [locations]);
+  }, []);
+
+  const updateTable = ()=>{
+    fetchlocations()
+  }
+
+  const toggle = () => setOpen(!open);
 
   const fetchlocations = async () => {
     const response = await fetch("/locations");
@@ -27,45 +32,44 @@ const Locations = () => {
 
   const newLocation = () => {
     console.log(location);
-    setOpen(false);
     axios.post(`/locations/new/${location}`).then((res) => {
       console.log(res);
       console.log(res.data);
       fetchlocations();
     });
+    toggle();
   };
 
   return (
     <React.Fragment>
-      <h1>Locations Page</h1>
       <div className="modalbox">
-        <Modal
-          onClose={() => setOpen(false)}
-          onOpen={() => setOpen(true)}
-          open={open}
-          trigger={<Button>Add Location</Button>}
+      <Button color="primary" onClick={toggle}>Add Location</Button>
+        <ModalB
+          size="large"
+          isOpen={open}
+          toggle={toggle}
         >
-          <Modal.Header>New Location</Modal.Header>
-          <Modal.Content>
+          <ModalHeader>New Location</ModalHeader>
+          <ModalBody>
             <Form>
-              <Form.Field>
+              <FormGroup>
                 <label>Location Name</label>
                 <input
                   placeholder="Enter Location Name"
                   onChange={searchUpdate}
                 />
-              </Form.Field>
-              <Button type="submit" onClick={() => newLocation()}>
+              </FormGroup>
+              <Button type="button" onClick={() => newLocation()}>
                 Submit
               </Button>
             </Form>
-          </Modal.Content>
-          <Modal.Actions>
-            <Button color="black" onClick={() => setOpen(false)}>
+          </ModalBody>
+          <ModalFooter>
+            <Button color="black" onClick={toggle}>
               Cancel
             </Button>
-          </Modal.Actions>
-        </Modal>
+          </ModalFooter>
+        </ModalB>
       </div>
       <div className="table">
         <table className="ui celled table">
@@ -81,64 +85,11 @@ const Locations = () => {
               key={location[0]}
               id={location[0]}
               name={location[1]}
+              updateTable={() => fetchlocations()}
             />
           ))}
         </table>
       </div>
-    </React.Fragment>
-  );
-};
-
-const LocationTable = ({ id, name }) => {
-
-    const [open, setOpen] = useState(false);
-
-    const toggle = () => setOpen(!open);
-
-    // const editHandler = (id) => {
-    //     console.log(id)
-        
-    // }
-
-    const deleteHandler = (id) => {
-        console.log("delete_id "+id);
-        axios.delete(`/location/${id}/delete`)
-        .then(res => {
-            console.log("location deleted-" + res)
-        })
-        .catch(err => {
-            console.log(err)
-        });
-        
-    }
-
-  return (
-    <React.Fragment>
-    <ModalB size="large" isOpen={open} toggle={toggle}>
-        <ModalHeader>
-            Location
-        </ModalHeader>
-        <ModalBody>
-            <EditForm title="Location" oldname={name} id={id}></EditForm>
-        </ModalBody>        
-        <ModalFooter>
-            <Button color="black" onClick={toggle}>Cancel</Button>
-        </ModalFooter>
-    </ModalB>
-    <tbody>
-      <tr className="center aligned">
-        <td>{id}</td>
-        <td>{name}</td>
-        <td className="right aligned collapsing">
-          <Button className="ui labeled icon button" onClick={toggle}>
-            <i className="edit icon"></i>Edit
-          </Button>
-          <Button className="ui labeled icon button" onClick={() => deleteHandler(id)}>
-            <i className="trash icon"></i>Delete
-          </Button>
-        </td>
-      </tr>
-    </tbody>
     </React.Fragment>
   );
 };

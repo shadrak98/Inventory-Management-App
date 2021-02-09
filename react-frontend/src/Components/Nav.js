@@ -6,7 +6,7 @@ const Nav = () => {
     return (
         <nav className="nav-header">
             <Link to="/">
-                <p className="nav-title">Inventory Management App</p>
+                <h3 className="nav-title">Frappe Test</h3>
             </Link>
             <ul className="nav-items">
                 <Link to="/locations">

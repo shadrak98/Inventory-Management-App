@@ -3,18 +3,18 @@ import Dropdown from "./Dropdown";
 import { Form, Input, Label, Button, FormGroup, Row } from "reactstrap";
 import axios from 'axios';
 
-const ModalForm = ({ location, formType, onClose }) => {
+const ModalForm = ({ location, formType, onClose, movements, alert }) => {
 
   const [quantity, setQuantity] = useState("");
   const [productOptions, setProductOptions] = useState([]);
   const [locationOptions, setLocationOptions] = useState([]);
   const [product, setProduct] = useState("")
   const [place, setPlace] = useState("")
+  // const [movements, setMovements] = useState([])
 
   useEffect(() => {
     fetchProducts();
     fetchLocations();
-    console.log(formType);
   },[]);
   
   const fetchProducts = () => {
@@ -27,7 +27,7 @@ const ModalForm = ({ location, formType, onClose }) => {
             console.log(err);
         });
     } else {
-      axios.get(`/productmovements?location=${location}`)
+      axios.get(`/productmovements_locationwise?location=${location}`)
       .then(res => {
         setProductOptions(res.data);
       })
@@ -49,27 +49,45 @@ const ModalForm = ({ location, formType, onClose }) => {
 
   const FormHandler = () => {
 
+    let new_movements = new Map();
+    let k,v;
+    movements.map((movement) => {
+      k = movement[1];
+      v = movement[2];
+      new_movements.set(k,v)
+    });
+    // console.log(new_movements);
+    // console.log(new_movements.get(product));
+
     if(formType === "move") {      
-      console.log(place + " " + product + " " + quantity);
-      axios.post(`/productmovement?product=${product}&from=${location}&to=${place}&quantity=${quantity}`)
-      .then(res => {
-          console.log(res);
-      })
-      .catch(err => {
-          console.log(err);
-      });
+      if(new_movements.get(product) >= quantity) {
+        console.log(place + " " + product + " " + quantity);
+        axios.post(`/productmovement?product=${product}&from=${location}&to=${place}&quantity=${quantity}`)
+        .then(res => {
+            console.log(res);
+        })
+        .catch(err => {
+            console.log(err);
+        });
+      } else {
+        alert(true);
+      }
       setPlace("");
       setProduct("");
       setQuantity("");
       onClose(formType);
     } else if(formType === "export") {
-      axios.post(`/productmovement?product=${product}&from=${location}&to=NULL&quantity=${quantity}`)
+      if(new_movements.get(product) >= quantity) {
+        axios.post(`/productmovement?product=${product}&from=${location}&to=NULL&quantity=${quantity}`)
         .then(res => {
             console.log(res.data);    
         })
         .catch(err => {
             console.log(err);
         });
+      } else {
+        alert(true);
+      }
       console.log("ok")
       onClose(formType);
       setProduct("");
@@ -100,15 +118,15 @@ const ModalForm = ({ location, formType, onClose }) => {
                 <Dropdown changeHandler={(e) => {setProduct(e.target.textContent)}} options={productOptions}></Dropdown>
               </FormGroup>
             </div>
-            <div className="row-element">
-              <FormGroup disabled={(formType === "move")?false:true}>
+            {(formType==='move') && <div className="row-element">
+              <FormGroup>
                 <Label>Location </Label>
                 <Dropdown
                   changeHandler={(e) => {setPlace(e.target.textContent)}}
                   options={locationOptions}
                 ></Dropdown>
               </FormGroup>
-            </div>
+            </div>}
           </Row>
         </div>
         <FormGroup>

@@ -1,14 +1,8 @@
 import React, { useState, useEffect } from "react";
-// import { Button, Modal, Form, ModalDescription } from 'semantic-ui-react';
 import axios from "axios";
 import Dropdown from "../Components/Dropdown";
-// import MoveForm from "../Components/MoveForm";
-// import ExportForm from "../Components/ExportForm";
-// import ImportForm from "../Components/ImportForm";
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Alert } from "reactstrap";
 import ModalForm from "../Components/ModalForm";
-
-// import Modalbox from '../Components/Modalbox';
 
 const ProductMovemnent = () => {
   const [movements, setMovements] = useState([]);
@@ -17,10 +11,12 @@ const ProductMovemnent = () => {
   const [open, setOpen] = useState(false);
   const [openE, setOpenE] = useState(false);
   const [openM, setOpenM] = useState(false);
+  const [alertOpen, setAlert] = useState(false);
 
   const toggle = () => setOpen(!open);
   const exportToggle = () => setOpenE(!openE);
   const moveToggle = () => setOpenM(!openM);
+  const alertToggle = () => setAlert(!alertOpen);
 
   useEffect(() => {
     fetchlocations();
@@ -45,6 +41,12 @@ const ProductMovemnent = () => {
     loca();
   };
 
+  const showAlert = (alert) => {
+    if(alert){
+      alertToggle();
+    }
+  }
+
   const fetchlocations = async () => {
     const response = await fetch("/locations");
     const data = await response.json();
@@ -59,25 +61,18 @@ const ProductMovemnent = () => {
   };
 
   const loca = () => {
-    console.log("loca=" + location);
     axios
-      .get(`/productmovements?location=${location}`)
+      .get(`/productmovements_locationwise?location=${location}`)
       .then((res) => {
-        // console.log(res.data+"hyderrabad");
         setMovements(res.data);
-        // setExportOptions(res.data);
       })
       .catch((err) => console.log(err));
   };
 
   const fetchMovements = async () => {
-    // const response = await fetch('/productmovement');
-    // const data = await response.json();
     axios
       .get("/productmovement")
       .then((res) => {
-        // console.log("sahdrak");
-        // console.log(res.data);
         setMovements(res.data);
       })
       .catch((err) => {
@@ -88,7 +83,9 @@ const ProductMovemnent = () => {
   return (
     <React.Fragment>
       <div className="container">
-        <h1>ProductMovemnent Page</h1>
+        <div>
+          <Alert isOpen={alertOpen} toggle={alertToggle} color="danger">Quantity entered is greater than it should be! Please refill the form.</Alert>
+        </div>
         <div className="dropdown">
           <Dropdown changeHandler={changeHandler} options={options} />
         </div>
@@ -129,7 +126,7 @@ const ProductMovemnent = () => {
           <ModalHeader>Import Item</ModalHeader>
           <ModalBody>
             {/* <ImportForm location={location} /> */}
-            <ModalForm location={location} formType="import" onClose={(modal) =>submitModal(modal)}/>
+            <ModalForm location={location} formType="import" movements={movements} alert={(alert) => showAlert(alert)} onClose={(modal) =>submitModal(modal)}/>
           </ModalBody>
           <ModalFooter>
             <Button color="secondary" onClick={toggle}>
@@ -146,7 +143,7 @@ const ProductMovemnent = () => {
               location={location}
               onClose={(modal) => submitModal(modal)}
             /> */}
-            <ModalForm location={location} formType="export" onClose={(modal) =>submitModal(modal)}/>
+            <ModalForm location={location} formType="export" movements={movements} alert={(alert) => showAlert(alert)} onClose={(modal) =>submitModal(modal)}/>
           </ModalBody>
           <ModalFooter>
             <Button color="secondary" onClick={exportToggle}>
@@ -160,7 +157,7 @@ const ProductMovemnent = () => {
           <ModalHeader>Move Item</ModalHeader>
           <ModalBody>
             {/* <MoveForm location={location} /> */}
-            <ModalForm location={location} formType="move" onClose={(modal) =>submitModal(modal)}/>
+            <ModalForm location={location} formType="move" movements={movements} alert={(alert) => showAlert(alert)} onClose={(modal) =>submitModal(modal)}/>
           </ModalBody>
           <ModalFooter>
             <Button color="secondary" onClick={moveToggle}>
@@ -178,7 +175,7 @@ const ProductMovemnent = () => {
                 <th>Quantity</th>
               </tr>
             </thead>
-            {/* {console.log(movements + "movements")} */}
+            {/* {console.log(movements + "----movements")} */}
             {movements.map((movement) => (
               <MovementTable
                 key={movement}

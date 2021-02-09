@@ -25,7 +25,14 @@ function App() {
 
 const Home = () => {
   return (
-    <h2>Home Page</h2>
+    <React.Fragment>
+    <main className="container">
+      <div className="bg-light p-5 rounded">
+        <h2>Inventory Management Application</h2>
+        <p className="lead">This is Home Page of Inventory Management Application.</p>
+      </div>
+    </main>
+    </React.Fragment>
   );
 }
 
