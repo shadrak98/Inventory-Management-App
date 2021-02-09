@@ -18,8 +18,8 @@
 
 ## File Structure
 
-/flask - Flask Server
-/react-frontend - React User Interface
+/flask - Flask Server <br>
+/react-frontend - React User Interface <br>
 
 ## Screenshots
 
